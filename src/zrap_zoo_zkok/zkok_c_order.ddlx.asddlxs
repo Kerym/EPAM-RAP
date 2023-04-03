@@ -1,0 +1,120 @@
+@Metadata.layer: #CORE
+@UI: {
+    headerInfo: { typeName: 'Order',
+                  typeNamePlural: 'Orders',
+                  title: { type: #STANDARD, label: 'Order' },
+                  description: { type: #STANDARD, value: 'OrderId' }  }, 
+    presentationVariant: [{ sortOrder: [{ by: 'OrderId', direction: #DESC }] }] 
+                }
+annotate view ZKOK_C_ORDER 
+    with 
+{
+
+  @UI.facet: [
+    { id: 'OrderPrice',
+        purpose: #HEADER,
+        type: #DATAPOINT_REFERENCE,
+        position: 10,
+        targetQualifier: 'TotalPrice' },
+        
+    { id: 'StatusId',
+        purpose: #HEADER,
+        type: #DATAPOINT_REFERENCE,
+        position: 20,
+        targetQualifier: 'StatusData' },
+        
+    { label: 'Order Information',
+        id: 'OrderInfo',
+        type: #COLLECTION,
+        position: 10 },
+
+    { id: 'Order',
+        purpose: #STANDARD,
+        type: #IDENTIFICATION_REFERENCE,
+        parentId: 'OrderInfo',
+        label: 'General Information',
+        position: 10 },
+        
+    { id: 'Prices',
+        purpose: #STANDARD,
+        type: #FIELDGROUP_REFERENCE,
+        parentId: 'OrderInfo',
+        label: 'Prices', 
+        position: 20,
+        targetQualifier: 'PricesGroup' },
+        
+    { id: 'Dates',
+        purpose: #STANDARD,
+        type: #FIELDGROUP_REFERENCE,
+        parentId: 'OrderInfo',
+        label: 'Dates',
+        position: 30,
+        targetQualifier: 'DatesGroup' },
+        
+
+    { id: 'OrderItem',
+        purpose: #STANDARD,
+        type: #LINEITEM_REFERENCE,
+        label: 'Order Items Information',
+        position: 20,
+        targetElement: '_OrderItem'}
+  ]
+
+        @UI.hidden: true
+        OrderUuid;
+        @EndUserText.label: 'Order ID'
+        @UI: { lineItem:       [{ position: 10 }],
+               identification: [{ position: 10 }] }
+        OrderId;
+        @EndUserText.label: 'Client №'
+        @UI: { lineItem:       [{ position: 20 },
+                                { type: #FOR_INTENT_BASED_NAVIGATION, semanticObjectAction: 'display', label: 'Create client' }],
+               identification: [{ position: 20 }],
+               selectionField: [{ position: 20 }] }  
+               @Consumption.semanticObject: 'Client'        
+        ClientId;
+        @EndUserText.label: 'Employee №'
+        @UI: { lineItem:       [{ position: 30 },
+                                { type: #FOR_INTENT_BASED_NAVIGATION, semanticObjectAction: 'display', label: 'Create employee' }],
+               identification: [{ position: 30 }],
+               selectionField: [{ position: 30 }] }  
+               @Consumption.semanticObject: 'Employee'
+        EmployeeId;
+        @EndUserText.label: 'Status'
+        @UI: { lineItem:       [{ position: 40, criticality: 'StatusIndicator' },
+                                { type: #FOR_ACTION, dataAction: 'confirmedStatus', label: 'Confirmed' },
+                                { type: #FOR_ACTION, dataAction: 'canceledStatus',  label: 'Canceled' },
+                                { type: #FOR_ACTION, dataAction: 'completedStatus', label: 'Completed' } ],
+               identification: [{ type: #FOR_ACTION, dataAction: 'confirmedStatus', label: 'Confirmed' },
+                                { type: #FOR_ACTION, dataAction: 'canceledStatus',  label: 'Canceled' },
+                                { type: #FOR_ACTION, dataAction: 'completedStatus', label: 'Completed' } ],
+               selectionField: [{ position: 40 }] }
+        @UI.dataPoint: { qualifier: 'StatusData', title: 'Status', criticality: 'StatusIndicator' }
+        StatusId;
+        @EndUserText.label: 'Order Type'
+        @UI: { lineItem:       [{ position: 50 }],
+               identification: [{ position: 50 }],
+               selectionField: [{ position: 50 }] }
+        OrdertypeId;
+        @EndUserText.label: 'Sale Coefficient'
+        @UI: { lineItem:       [{ position: 60 }] }
+        @UI.fieldGroup: [{ qualifier: 'PricesGroup', position: 10 }]
+        SaleCoeff;
+        @EndUserText.label: 'Order Total Price'
+        @UI: { lineItem:       [{ position: 70 }] }
+        @UI.dataPoint: { qualifier: 'TotalPrice', title: 'Total Price'}
+        @UI.fieldGroup: [{ qualifier: 'PricesGroup', position: 20 }]
+        OrderPrice;
+        @EndUserText.label : 'Created By'
+        @UI.fieldGroup     : [{ position: 10, qualifier: 'DatesGroup' } ]  
+        CreatedBy;
+        @EndUserText.label : 'Created At'
+        @UI.fieldGroup     : [{ position: 20, qualifier: 'DatesGroup' } ] 
+        CreatedAt;
+        @UI.hidden: true
+        LastChangedBy;
+        @UI.hidden: true
+        LastChangedAt;
+        @UI.hidden: true
+        LocalLastChangedAt;   
+}

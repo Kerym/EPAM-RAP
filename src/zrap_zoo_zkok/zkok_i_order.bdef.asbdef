@@ -1,0 +1,98 @@
+managed;
+with draft;
+
+define behavior for ZKOK_I_ORDER alias Order
+implementation in class zbp_kok_i_order unique
+persistent table zkok_d_order
+draft table zkok_d_order_d
+lock master total etag LastChangedAt
+authorization master ( instance )
+etag master LocalLastChangedAt
+{
+  create;
+  update;
+  delete;
+  association _OrderItem { create; with draft; }
+
+  field ( numbering : managed, readonly ) OrderUuid;
+  field ( readonly ) StatusId, OrderId, SaleCoeff, OrderPrice, CurrencyCode;
+  field ( mandatory ) ClientId, EmployeeId, OrdertypeId;
+  field ( readonly ) LastChangedAt, LastChangedBy, CreatedAt, CreatedBy, LocalLastChangedAt;
+
+  action ( features : instance ) confirmedStatus result [1] $self;
+  action ( features : instance ) canceledStatus result [1] $self;
+  action ( features : instance ) completedStatus result [1] $self;
+
+  internal action recalcTotalPrice;
+
+  determination setOrderId on save { create; }
+  determination calculateTotalPrice on modify { create; field OrdertypeId; }
+
+  validation validateClient on save { field ClientId; create; }
+  validation validateOrderType on save { field OrdertypeId; create; }
+
+  draft determine action Prepare
+  {
+    validation validateClient;
+    validation validateOrderType;
+    validation OrderItem~validateGoods;
+    validation OrderItem~validateQuantity;
+  }
+
+  mapping for zkok_d_order
+  {
+
+    OrderUuid = order_uuid;
+    OrderId = order_id;
+    ClientId = clnt_id;
+    EmployeeId = empl_id;
+    StatusId = status_id;
+    OrdertypeId  = ordertype_id;
+    OrderPrice = order_price;
+    CurrencyCode = currency_code;
+    CreatedBy = created_by;
+    CreatedAt = created_at;
+    LastChangedBy = last_changed_by;
+    LastChangedAt = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+
+  }
+}
+
+define behavior for ZKOK_I_ORDERITEM alias OrderItem
+implementation in class zbp_kok_i_orderitem unique
+persistent table ZKOK_D_ORDERITEM
+draft table zkok_d_orderit_d
+lock dependent by _Order
+authorization dependent by _Order
+etag master LocalLastChangedAt
+{
+
+  association _Order { with draft; }
+  update;
+  delete;
+
+  field ( numbering : managed, readonly ) OrderitemUuid;
+  field ( readonly ) OrderUuid;
+  field ( mandatory ) GoodsId, Quantity;
+  field ( readonly ) Price, SubtotalPrice, CurrencyCode;
+  field ( readonly ) LocalLastChangedAt;
+
+  determination calculateItemSubtotal on modify { field Quantity, GoodsId; }
+
+  validation validateGoods     on save { field GoodsId; create; }
+  validation validateQuantity  on save { field Quantity; create; }
+
+  mapping for zkok_d_orderitem
+  {
+    OrderitemUuid = orderitem_uuid;
+    OrderUuid = order_uuid;
+    GoodsId = goods_id;
+    Price = price;
+    Quantity = quantity;
+    SubtotalPrice = subtotal_price;
+    CurrencyCode = currency_code;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+
+}

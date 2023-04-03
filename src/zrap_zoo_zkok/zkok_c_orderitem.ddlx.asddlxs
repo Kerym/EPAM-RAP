@@ -1,0 +1,39 @@
+@Metadata.layer: #CORE
+@UI: {
+    headerInfo: { typeName: 'Order Item',
+                  typeNamePlural: 'Order Items',
+                  title: { type: #STANDARD, value: 'GoodsName' }                
+                }
+     }
+annotate view ZKOK_C_ORDERITEM
+    with 
+{
+    @UI.facet: [{ id: 'OrderItem',
+                 purpose: #STANDARD,
+                 type: #IDENTIFICATION_REFERENCE,
+                 label: 'Order Item',
+                 position: 10}]
+    
+    @UI.hidden: true
+    OrderitemUuid;
+    @UI.hidden: true
+    OrderUuid;
+    @UI: { lineItem:       [{ position: 10 }],
+           identification: [{ position: 10 },
+                            { type: #FOR_INTENT_BASED_NAVIGATION, semanticObjectAction: 'manage', label: 'Show GoodsItem' }],
+           selectionField: [{ position: 10 }] }
+    @Consumption.semanticObject: 'Goods'    
+    GoodsId;
+    @UI: { lineItem:       [{ position: 20 }],
+           identification: [{ position: 20 }] }
+    Price;
+    @UI: { lineItem:       [{ position: 30 }],
+           identification: [{ position: 30 }] }
+    Quantity;
+    @UI: { lineItem:       [{ position: 40 }],
+           identification: [{ position: 40 }] }
+    SubtotalPrice;
+    @UI.hidden: true
+    LocalLastChangedAt;
+    
+}

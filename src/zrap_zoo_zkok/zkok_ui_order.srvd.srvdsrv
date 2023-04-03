@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service Definition for Order App'
+define service ZKOK_UI_ORDER {
+  expose ZKOK_C_ORDER as OrderWithItem;
+  expose ZKOK_C_ORDERITEM as OrderItem;
+}

@@ -1,0 +1,24 @@
+projection;
+use draft;
+
+define behavior for ZKOK_C_ORDER alias Order
+{
+  use create;
+  use update;
+  use delete;
+
+  use association _OrderItem { create; with draft; }
+
+  use action confirmedStatus;
+  use action canceledStatus;
+  use action completedStatus;
+
+}
+
+define behavior for ZKOK_C_ORDERITEM alias OrderItem
+{
+  use update;
+  use delete;
+
+  use association _Order { with draft; }
+}
